@@ -7,6 +7,9 @@ import re
 import shutil
 from urllib.parse import urlparse
 from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -108,9 +111,13 @@ def collect_youtube_images(url, dir_path):
         images_path = os.path.join(dir_path, "images")
         create_directory(images_path, overwrite=True)
 
-        options = webdriver.ChromeOptions()
+        options = Options()
+        options.add_argument("--no-sandbox")
         options.add_argument("--headless")
-        driver = webdriver.Chrome(options=options)
+        options.add_argument("--disable-dev-shm-usage")
+        driver = webdriver.Chrome(
+            service=Service(ChromeDriverManager().install()), options=options
+        )
         driver.set_window_size(1920, 1080)
         driver.get(url)
         WebDriverWait(driver, 20).until(

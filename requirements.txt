@@ -10,4 +10,5 @@ python-dotenv==1.0.1
 pytube==15.0.0
 selenium==4.17.2
 streamlit==1.31.0
+webdriver-manager==4.0.1
 youtube_transcript_api==0.6.2

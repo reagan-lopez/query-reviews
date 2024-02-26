@@ -1,6 +1,7 @@
 import utils
 import constants
 import entities
+from logger import LOG_FILE_PATH
 
 import streamlit as st
 import os
@@ -10,25 +11,10 @@ from datetime import datetime
 
 # Streamlit app
 def main():
-    load_dotenv()
-    options = ["Select a review URL"]
-    input_urls = [
-        "https://www.pcmag.com/news/meteor-lake-first-tests-intel-core-ultra-7-benched-for-cpu-graphics-and",
-        "https://www.youtube.com/watch?v=WH-qtuVRS2c",
-        "https://www.youtube.com/watch?v=Obtc24lwbrw",
-        "https://www.pcworld.com/article/2171363/acer-swift-go-14-review-3.html",
-        "https://www.youtube.com/watch?v=Dio25xA6pwE",
-    ]
-    options.extend(input_urls)
-
-    if "first_run" not in st.session_state:
-        utils.create_directory(constants.DATA_DIR, overwrite=True)
-        utils.create_directory(constants.OUTPUT_DIR, overwrite=True)
-        st.session_state["first_run"] = True
-        st.session_state["previous_url"] = None
-
     st.set_page_config(layout="wide")
     st.title("Query Reviews")
+
+    load_dotenv()
     try:
         os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_API_KEY")
     except Exception as e:
@@ -36,6 +22,21 @@ def main():
             "The GOOGLE_API_KEY environment variable is not set. Please set the GOOGLE_API_KEY environment variable."
         )
     else:
+        if "first_run" not in st.session_state:
+            utils.create_directory(constants.DATA_DIR, overwrite=True)
+            utils.create_directory(constants.OUTPUT_DIR, overwrite=True)
+            st.session_state["first_run"] = True
+            st.session_state["previous_url"] = None
+        options = ["Select a review URL"]
+        input_urls = [
+            "https://www.pcmag.com/news/meteor-lake-first-tests-intel-core-ultra-7-benched-for-cpu-graphics-and",
+            "https://www.youtube.com/watch?v=WH-qtuVRS2c",
+            "https://www.youtube.com/watch?v=Obtc24lwbrw",
+            "https://www.pcworld.com/article/2171363/acer-swift-go-14-review-3.html",
+            "https://www.youtube.com/watch?v=Dio25xA6pwE",
+        ]
+        options.extend(input_urls)
+
         tab1, tab2 = st.tabs(["Individual Review", "Overall Summary"])
         with tab1:
             selected_url = st.selectbox(
