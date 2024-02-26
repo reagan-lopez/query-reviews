@@ -1,8 +1,6 @@
 import prompts
 from logger import logging
 
-import os
-from dotenv import load_dotenv
 from typing import List
 from pydantic import BaseModel, Field
 
@@ -18,9 +16,6 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.output_parsers import PydanticOutputParser
 from langchain_community.vectorstores import FAISS
-
-load_dotenv()
-os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_API_KEY")
 
 
 class GeneratedMetadata(BaseModel):
