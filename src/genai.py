@@ -1,16 +1,14 @@
+# Importing necessary modules and classes
 import prompts
 from logger import logging
-
 from typing import List
 from pydantic import BaseModel, Field
-
 from llama_index import SimpleDirectoryReader
 from llama_index.multi_modal_llms import GeminiMultiModal
 from llama_index.program import MultiModalLLMCompletionProgram
 from llama_index.output_parsers import (
     PydanticOutputParser as LlamaIndexPydanticOutputParser,
 )
-
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import ChatPromptTemplate
@@ -18,6 +16,7 @@ from langchain.output_parsers import PydanticOutputParser
 from langchain_community.vectorstores import FAISS
 
 
+# Defining data models for generated output
 class GeneratedMetadata(BaseModel):
     title: str = Field(..., description="Title of the website", required=False)
     author: str = Field(..., description="Author of the website", required=False)
@@ -46,8 +45,17 @@ class GeneratedBenchmark(BaseModel):
     )
 
 
-# Generate overview
 def generate_overview(dir_path, generate_metadata=False):
+    """
+    Generate metadata and summary for documents in a directory.
+
+    Args:
+        dir_path (str): Path to the directory containing documents.
+        generate_metadata (bool, optional): Flag indicating whether to generate metadata. Defaults to False.
+
+    Returns:
+        Tuple[GeneratedMetadata, GeneratedSummary]: Tuple containing generated metadata and summary.
+    """
     metadata, summary = None, None
 
     # Define models
@@ -55,11 +63,9 @@ def generate_overview(dir_path, generate_metadata=False):
     model = ChatGoogleGenerativeAI(model="gemini-pro", temperature=0.3)
 
     try:
-        # Load documenet vector store
+        # Load document vector store
         documents = SimpleDirectoryReader(dir_path).load_data()
-        nodes = []
-        for doc in documents:
-            nodes.append(doc.text)
+        nodes = [doc.text for doc in documents]
         vector_store = FAISS.from_texts(nodes, embedding=embeddings)
     except Exception as e:
         logging.exception(e)
@@ -105,8 +111,16 @@ def generate_overview(dir_path, generate_metadata=False):
     return metadata, summary
 
 
-# Generate benchmark data
 def generate_benchmark_data(images_path):
+    """
+    Generate benchmark data for images in a directory.
+
+    Args:
+        images_path (str): Path to the directory containing images.
+
+    Returns:
+        List[GeneratedBenchmark]: List of generated benchmark data.
+    """
     benchmarks = []
     model = GeminiMultiModal(model_name="models/gemini-pro-vision", temperature=0)
     try:
@@ -132,8 +146,16 @@ def generate_benchmark_data(images_path):
     return benchmarks
 
 
-# Generate overall summary
 def generate_overall_summary(summaries):
+    """
+    Generate an overall summary based on input summaries.
+
+    Args:
+        summaries (List[str]): List of summaries.
+
+    Returns:
+        GeneratedSummary: Generated overall summary.
+    """
     overall_summary = None
 
     # Remove empty summaries before embedding

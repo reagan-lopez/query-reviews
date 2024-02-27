@@ -12,6 +12,12 @@ import textwrap
 
 class Review:
     def __init__(self, url: str):
+        """
+        Initialize Review object with the provided URL.
+
+        Args:
+        url (str): The URL of the review.
+        """
         self.url: str = url
         self.is_youtube: bool = None
         self.website_name: str = None
@@ -22,12 +28,15 @@ class Review:
         self.benchmarks: pd.DataFrame = None
 
     def set_overview(self):
+        """
+        Set overview attributes of the review.
+        """
         if not self.url:
             return
 
         self.is_youtube = utils.is_youtube_link(self.url)
 
-        msg = f"Collecting data from {self.url}"
+        msg = f"Generating overview for {self.url}"
         print(msg)
         logging.info(msg)
 
@@ -63,8 +72,18 @@ class Review:
                 if generated_summary:
                     self.summary = generated_summary.summary
 
+        msg = f"Done generating overview for {self.url}"
+        print(msg)
+        logging.info(msg)
+
     def set_benchmark_data(self, images=None):
-        msg = f"Collecting benchmark images from {self.url}"
+        """
+        Set benchmark data of the review.
+
+        Args:
+        images (list): List of image paths.
+        """
+        msg = f"Generating benchmark data for {self.url}"
         print(msg)
         logging.info(msg)
 
@@ -81,24 +100,25 @@ class Review:
         generated_benchmarks = genai.generate_benchmark_data(images_path=images_path)
         self.benchmarks = utils.get_benchmarks_df(benchmarks=generated_benchmarks)
 
+        msg = f"Done generating benchmark data for {self.url}"
+        print(msg)
+        logging.info(msg)
+
     def download_csv(self):
+        """
+        Download review data as CSV.
+        """
         output = StringIO()  # Create an in-memory file-like object
         writer = csv.writer(output)
 
-        if self:
-            website = self.website_name
-            link = self.url
-            title = self.title
-            author = self.author
-            summary = self.summary
+        writer.writerow(["Website", self.website_name])
+        writer.writerow(["Link", self.url])
+        writer.writerow(["Title", self.title])
+        writer.writerow(["Author", self.author])
+        if not self.summary or self.summary == "":
+            writer.writerow(["Summary", self.summary])
         else:
-            website, title, link, author, summary = "", "", "", "", ""
-
-        writer.writerow(["Website", website])
-        writer.writerow(["Link", link])
-        writer.writerow(["Title", title])
-        writer.writerow(["Author", author])
-        writer.writerow(["Summary", textwrap.fill(summary, width=70)])
+            writer.writerow(["Summary", textwrap.fill(self.summary, width=70)])
 
         # Adding two empty rows for formatting
         writer.writerow([])
@@ -115,13 +135,26 @@ class Review:
 
 class Reviews:
     def __init__(self, urls: str):
+        """
+        Initialize Reviews object with the provided URLs.
+
+        Args:
+        urls (list): List of review URLs.
+        """
         self.urls = urls
         self.overview: pd.DataFrame = None
         self.summary: str = None
 
     def set_summary(self):
+        """
+        Set summary attributes of the reviews.
+        """
         if not self.urls:
             return
+
+        msg = f"Generating summary for {len(self.urls)} urls"
+        print(msg)
+        logging.info(msg)
 
         data = []
         columns = ["Website", "Link", "Title", "Author", "Summary"]
@@ -146,15 +179,16 @@ class Reviews:
             self.summary = generated_summary.summary
 
     def download_csv(self):
+        """
+        Download reviews summary data as CSV.
+        """
         output = StringIO()  # Create an in-memory file-like object
         writer = csv.writer(output)
 
-        if self:
-            summary = self.summary
+        if not self.summary or self.summary == "":
+            writer.writerow(["Overall Summary", self.summary])
         else:
-            summary = ""
-
-        writer.writerow(["Overall Summary", textwrap.fill(summary, width=70)])
+            writer.writerow(["Overall Summary", textwrap.fill(self.summary, width=70)])
 
         # Adding two empty rows for formatting
         writer.writerow([])

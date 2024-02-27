@@ -22,6 +22,16 @@ from pytube import YouTube
 
 
 def create_directory(directory, overwrite=False):
+    """
+    Create a directory if it does not exist.
+
+    Args:
+        directory (str): The directory path to create.
+        overwrite (bool, optional): Whether to overwrite the directory if it already exists. Defaults to False.
+
+    Returns:
+        bool: True if directory creation is successful, False otherwise.
+    """
     try:
         if not os.path.exists(directory):
             os.makedirs(directory)
@@ -40,6 +50,15 @@ def create_directory(directory, overwrite=False):
 
 
 def is_youtube_link(url):
+    """
+    Check if a given URL is a YouTube link.
+
+    Args:
+        url (str): The URL to check.
+
+    Returns:
+        bool: True if the URL is a YouTube link, False otherwise.
+    """
     youtube_pattern = (
         r"(http(s)?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/|v\/)|youtu\.be\/)"
     )
@@ -48,6 +67,15 @@ def is_youtube_link(url):
 
 
 def collect_youtube_metadata(url):
+    """
+    Collect metadata (channel name, title) from a YouTube video.
+
+    Args:
+        url (str): The URL of the YouTube video.
+
+    Returns:
+        tuple: A tuple containing channel name and title.
+    """
     channel_name, title = None, None
     try:
         yt = YouTube(url)
@@ -60,6 +88,15 @@ def collect_youtube_metadata(url):
 
 
 def collect_website_metadata(url):
+    """
+    Extract the website name from a given URL.
+
+    Args:
+        url (str): The URL of the website.
+
+    Returns:
+        str: The name of the website.
+    """
     website_name = None
     try:
         website_name = urlparse(url).netloc
@@ -69,6 +106,13 @@ def collect_website_metadata(url):
 
 
 def collect_youtube_content(url, dir_path):
+    """
+    Collect transcript from a YouTube video and save it to a file.
+
+    Args:
+        url (str): The URL of the YouTube video.
+        dir_path (str): The directory path to save the transcript.
+    """
     if not dir_path:
         return
     try:
@@ -83,6 +127,13 @@ def collect_youtube_content(url, dir_path):
 
 
 def collect_website_content(url, dir_path):
+    """
+    Collect text content from a website and save it to a file.
+
+    Args:
+        url (str): The URL of the website.
+        dir_path (str): The directory path to save the content.
+    """
     if not dir_path:
         return
     try:
@@ -106,6 +157,16 @@ def collect_website_content(url, dir_path):
 
 
 def collect_youtube_images(url, dir_path):
+    """
+    Capture images from a YouTube video and save them.
+
+    Args:
+        url (str): The URL of the YouTube video.
+        dir_path (str): The directory path to save the images.
+
+    Returns:
+        str: The directory path where the images are saved.
+    """
     images_path = None
     try:
         images_path = os.path.join(dir_path, "images")
@@ -152,6 +213,16 @@ def collect_youtube_images(url, dir_path):
 
 
 def collect_website_images(images, dir_path):
+    """
+    Save images from a website.
+
+    Args:
+        images (List[bytes]): List of image data.
+        dir_path (str): The directory path to save the images.
+
+    Returns:
+        str: The directory path where the images are saved.
+    """
     images_path = None
     try:
         images_path = os.path.join(dir_path, "images")
@@ -167,6 +238,15 @@ def collect_website_images(images, dir_path):
 
 
 def get_overview_df(result):
+    """
+    Generate an overview DataFrame from the collected data.
+
+    Args:
+        result: The collected data.
+
+    Returns:
+        pandas.DataFrame: Overview DataFrame.
+    """
     data = []
     if result:
         data.append(["Website", result.website_name])
@@ -179,6 +259,15 @@ def get_overview_df(result):
 
 
 def get_benchmarks_df(benchmarks):
+    """
+    Generate a DataFrame for benchmarks.
+
+    Args:
+        benchmarks: List of benchmarks.
+
+    Returns:
+        pandas.DataFrame: DataFrame for benchmarks.
+    """
     unique_products: Set[str] = set()
     for benchmark in benchmarks:
         if benchmark.is_benchmark:

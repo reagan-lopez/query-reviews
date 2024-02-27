@@ -1,7 +1,6 @@
 import utils
 import constants
 import entities
-from logger import LOG_FILE_PATH
 
 import streamlit as st
 import os
@@ -9,40 +8,54 @@ from dotenv import load_dotenv
 from datetime import datetime
 
 
-# Streamlit app
 def main():
+    # Set Streamlit page configuration
     st.set_page_config(layout="wide")
+    # Set the title of the web app
     st.title("Query Reviews")
 
+    # Load environment variables
     load_dotenv()
     try:
+        # Attempt to set the Google API key from environment variable
         os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_API_KEY")
     except Exception as e:
+        # Display an error message if the GOOGLE_API_KEY environment variable is not set
         st.error(
             "The GOOGLE_API_KEY environment variable is not set. Please set the GOOGLE_API_KEY environment variable."
         )
     else:
+        # Check if it is the first run
         if "first_run" not in st.session_state:
+            # Create necessary directory for data storage
             utils.create_directory(constants.DATA_DIR, overwrite=True)
-            utils.create_directory(constants.OUTPUT_DIR, overwrite=True)
+            # Mark that it's not the first run
             st.session_state["first_run"] = True
+            # Initialize previous URL as None
             st.session_state["previous_url"] = None
+
+        # List of input URLs
         options = ["Select a review URL"]
         input_urls = [
-            "https://www.pcmag.com/news/meteor-lake-first-tests-intel-core-ultra-7-benched-for-cpu-graphics-and",
+            "https://www.pcworld.com/article/2171363/acer-swift-go-14-review-3.html",
             "https://www.youtube.com/watch?v=WH-qtuVRS2c",
             "https://www.youtube.com/watch?v=Obtc24lwbrw",
-            "https://www.pcworld.com/article/2171363/acer-swift-go-14-review-3.html",
             "https://www.youtube.com/watch?v=Dio25xA6pwE",
+            "https://www.pcmag.com/news/meteor-lake-first-tests-intel-core-ultra-7-benched-for-cpu-graphics-and",
         ]
         options.extend(input_urls)
 
+        # Create tabs for Individual Review and Overall Summary
         tab1, tab2 = st.tabs(["Individual Review", "Overall Summary"])
+
+        # Individual Review tab functionality
         with tab1:
+            # Dropdown to select review URL
             selected_url = st.selectbox(
-                "foobar", options, index=0, label_visibility="hidden"
+                "Select a review URL", options, index=0, label_visibility="hidden"
             )
             if selected_url != "Select a review URL":
+                # Display review overview
                 st.subheader("Review Overview")
                 if selected_url != st.session_state["previous_url"]:
                     st.session_state["previous_url"] = selected_url
@@ -78,7 +91,7 @@ def main():
                             """
                         )
                         images = st.file_uploader(
-                            "foobar",
+                            "Upload screenshots",
                             accept_multiple_files=True,
                             label_visibility="hidden",
                         )
@@ -104,6 +117,8 @@ def main():
                         file_name=filename_csv,
                         mime="text/csv",
                     )
+
+        # Overall Summary tab functionality
         with tab2:
             n = len(input_urls)
             if (
@@ -130,7 +145,9 @@ def main():
                 )
 
                 data = reviews.download_csv()
-                filename_csv = f'reviews_summary_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv'
+                filename_csv = (
+                    f'review_summary_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv'
+                )
                 st.download_button(
                     label="Download as CSV",
                     data=data,
