@@ -21,10 +21,13 @@ This Streamlit app utilizes Generative AI to retrieve review details of the Inte
 2. Run the docker image.
 
    ```
-   docker run reaganlopez/query-reviews:latest
+   docker run --rm -p 8501:8501 reaganlopez/query-reviews:latest
    ```
 
-3. View the `streamlit` app in your browser using the `Network URL:<url>`.
+3. View the `streamlit` app in browser.
+   ```
+   http://localhost:8501/
+   ```
 
 ## Building from source (Tested on Ubuntu 23.04):
 
