@@ -176,8 +176,10 @@ def collect_youtube_images(url, dir_path):
         options.add_argument("--no-sandbox")
         options.add_argument("--headless")
         options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--ignore-certificate-errors")
         driver = webdriver.Chrome(
-            service=Service(ChromeDriverManager().install()), options=options
+            service=Service(ChromeDriverManager().install()),
+            options=options,
         )
         driver.set_window_size(1920, 1080)
         driver.get(url)
