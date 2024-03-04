@@ -8,6 +8,14 @@ This Streamlit app utilizes Generative AI to retrieve review details of the Inte
 - Since the requirement was to create an AI bot, it was intentional to avoid a pure web scraping approach.
 - It's worth noting that Generative AI encounters challenges in accurately extracting numerical data, often resulting in fabricated numbers.
 
+## Sample Deployment
+
+A sample deployment of this app on an economical AWS ECS can be found at the link below.
+
+```
+http://54.201.98.83:8501/
+```
+
 ## Building from Docker Image (Recommended):
 
 **Note**: This is the recommended option to avoid dependency issues.
